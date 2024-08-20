@@ -1,0 +1,51 @@
+<html>
+<head>
+<title>HoltWinters.ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #7a7e85;}
+.s1 { color: #cf8e6d;}
+.s2 { color: #bcbec4;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+HoltWinters.ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% 
+</span><span class="s1">import </span><span class="s2">pandas </span><span class="s1">as </span><span class="s2">pd</span>
+<span class="s1">import </span><span class="s2">numpy </span><span class="s1">as </span><span class="s2">np</span>
+<span class="s1">import </span><span class="s2">matplotlib</span><span class="s3">.</span><span class="s2">pyplot </span><span class="s1">as </span><span class="s2">plt</span>
+<span class="s0">#%% 
+#holt winters method</span>
+<span class="s1">from </span><span class="s2">statsmodels</span><span class="s3">.</span><span class="s2">tsa</span><span class="s3">.</span><span class="s2">holtwinters </span><span class="s1">import </span><span class="s2">ExponentialSmoothing</span>
+<span class="s0">#%% 
+</span><span class="s2">data </span><span class="s3">= </span><span class="s2">pd</span><span class="s3">.</span><span class="s2">read_csv</span><span class="s3">(</span><span class="s4">'Retail_sales_of_electricity_United_States_monthly.csv'</span><span class="s3">, </span><span class="s2">index_col</span><span class="s3">=</span><span class="s4">'Month'</span><span class="s3">, </span><span class="s2">parse_dates</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s2">data</span><span class="s3">.</span><span class="s2">head</span><span class="s3">()</span>
+<span class="s0">#%% 
+</span><span class="s2">data</span><span class="s3">.</span><span class="s2">dropna</span><span class="s3">(</span><span class="s2">inplace</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">#%% 
+</span><span class="s2">data</span><span class="s3">.</span><span class="s2">sort_index</span><span class="s3">(</span><span class="s2">inplace</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s2">data</span><span class="s3">.</span><span class="s2">head</span><span class="s3">() </span><span class="s0">#sort rising date</span>
+<span class="s2">data</span><span class="s3">[</span><span class="s4">'all sectors million kilowatthours'</span><span class="s3">].</span><span class="s2">plot</span><span class="s3">()</span>
+<span class="s0">#%% 
+</span><span class="s2">data</span><span class="s3">.</span><span class="s2">index</span><span class="s3">.</span><span class="s2">freq</span><span class="s3">=</span><span class="s4">'MS'   </span>
+<span class="s0">#%% 
+</span><span class="s2">train_data</span><span class="s3">=</span><span class="s2">data</span><span class="s3">.</span><span class="s2">iloc</span><span class="s3">[:-</span><span class="s5">12</span><span class="s3">]</span>
+<span class="s2">test_data</span><span class="s3">=</span><span class="s2">data</span><span class="s3">.</span><span class="s2">iloc</span><span class="s3">[-</span><span class="s5">12</span><span class="s3">:]</span>
+<span class="s0">#%% 
+</span><span class="s2">fitHoltWinter</span><span class="s3">=</span><span class="s2">ExponentialSmoothing</span><span class="s3">(</span><span class="s2">train_data</span><span class="s3">[</span><span class="s4">'all sectors million kilowatthours'</span><span class="s3">], </span><span class="s2">trend</span><span class="s3">=</span><span class="s4">'add'</span><span class="s3">,</span><span class="s2">seasonal</span><span class="s3">=</span><span class="s4">'add'</span><span class="s3">,</span><span class="s2">seasonal_periods</span><span class="s3">=</span><span class="s5">12</span><span class="s3">).</span><span class="s2">fit</span><span class="s3">()   </span><span class="s0">#another problem</span>
+<span class="s0">#%% 
+</span><span class="s2">fcastHoltWinter</span><span class="s3">=</span><span class="s2">fitHoltWinter</span><span class="s3">.</span><span class="s2">forecast</span><span class="s3">(</span><span class="s2">len</span><span class="s3">(</span><span class="s2">test_data</span><span class="s3">)).</span><span class="s2">rename</span><span class="s3">(</span><span class="s4">'HW Forecast'</span><span class="s3">)</span>
+<span class="s2">fcastHoltWinter</span>
+<span class="s0">#%% 
+</span><span class="s2">train_data</span><span class="s3">[</span><span class="s4">'all sectors million kilowatthours'</span><span class="s3">].</span><span class="s2">plot</span><span class="s3">(</span><span class="s2">legend</span><span class="s3">=</span><span class="s1">True</span><span class="s3">,</span><span class="s2">label</span><span class="s3">=</span><span class="s4">'train'</span><span class="s3">)</span>
+<span class="s2">test_data</span><span class="s3">[</span><span class="s4">'all sectors million kilowatthours'</span><span class="s3">].</span><span class="s2">plot</span><span class="s3">(</span><span class="s2">legend</span><span class="s3">=</span><span class="s1">True</span><span class="s3">,</span><span class="s2">label</span><span class="s3">=</span><span class="s4">'test'</span><span class="s3">)</span>
+<span class="s2">fcastHoltWinter</span><span class="s3">.</span><span class="s2">plot</span><span class="s3">(</span><span class="s2">legend</span><span class="s3">=</span><span class="s1">True</span><span class="s3">,</span><span class="s2">label</span><span class="s3">=</span><span class="s4">'HW forecast'</span><span class="s3">)</span></pre>
+</body>
+</html>
